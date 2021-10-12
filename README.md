@@ -1,0 +1,1 @@
+Compilation of FreeCodeCamp challenges for Quality Assurance certification.
