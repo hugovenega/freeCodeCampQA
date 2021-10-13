@@ -65,4 +65,38 @@ function ConvertHandler() {
 
     return result;
   };
+
+  this.spellOutUnit = function unitAName(unit) {
+    let result;
+    let units;
+
+    if (unit !== undefined) {
+      units = unit.toLowerCase();
+    }
+
+    switch (units) {
+      case 'gal':
+        result = 'gallons';
+        break;
+      case 'l':
+        result = 'liters';
+        break;
+      case 'lbs':
+        result = 'pounds';
+        break;
+      case 'kg':
+        result = 'kilograms';
+        break;
+      case 'mi':
+        result = 'miles';
+        break;
+      case 'km':
+        result = 'kilometers';
+        break;
+      default:
+        result = 'cant find';
+    }
+
+    return result;
+  };
 }
