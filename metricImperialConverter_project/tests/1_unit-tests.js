@@ -45,4 +45,43 @@ mocha.suite('Unit Tests', () => {
       done();
     });
   });
+
+  mocha.suite('Function ConvertHandler.getUnit(input)', () => {
+    mocha.test('For each valid inputs', (done) => {
+      const input = [
+        'gal',
+        'l',
+        'mi',
+        'km',
+        'lbs',
+        'kg',
+        'GAL',
+        'L',
+        'MI',
+        'KM',
+        'LBS',
+        'KG',
+      ];
+
+      const output = [
+        'gal',
+        'L',
+        'mi',
+        'km',
+        'lbs',
+        'kg',
+        'gal',
+        'L',
+        'mi',
+        'km',
+        'lbs',
+        'kg',
+      ];
+
+      input.forEach((unit, index) => {
+        assert.equal(convertHandler.getUnit(unit), output[index]);
+      });
+      done();
+    });
+  });
 });
