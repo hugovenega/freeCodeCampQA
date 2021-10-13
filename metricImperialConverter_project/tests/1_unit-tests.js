@@ -83,5 +83,11 @@ mocha.suite('Unit Tests', () => {
       });
       done();
     });
+
+    mocha.test('Unknown unit input', (done) => {
+      const input = '5g';
+      assert.equal(convertHandler.getUnit(input), undefined);
+      done();
+    });
   });
 });
