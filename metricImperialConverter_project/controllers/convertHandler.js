@@ -31,4 +31,38 @@ function ConvertHandler() {
     }
     return result;
   };
+
+  this.getReturnUnit = function unitConverter(initUnit) {
+    let result;
+    let unit;
+
+    if (initUnit !== undefined) {
+      unit = initUnit.toLowerCase();
+    }
+
+    switch (unit) {
+      case 'gal':
+        result = 'L';
+        break;
+      case 'l':
+        result = 'gal';
+        break;
+      case 'lbs':
+        result = 'kg';
+        break;
+      case 'kg':
+        result = 'lbs';
+        break;
+      case 'mi':
+        result = 'km';
+        break;
+      case 'km':
+        result = 'mi';
+        break;
+      default:
+        result = undefined;
+    }
+
+    return result;
+  };
 }
