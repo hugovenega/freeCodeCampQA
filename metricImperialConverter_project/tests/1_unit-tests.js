@@ -101,4 +101,22 @@ mocha.suite('Unit Tests', () => {
       done();
     });
   });
+
+  mocha.suite('Function convertHandler.spellOutUnit(unit)', () => {
+    mocha.test('For each valid inputs', (done) => {
+      const input = ['gal', 'l', 'lbs', 'kg', 'mi', 'km'];
+      const expect = [
+        'gallons',
+        'liters',
+        'pounds',
+        'kilograms',
+        'miles',
+        'kilometers',
+      ];
+      input.forEach((unit, i) => {
+        assert.equal(convertHandler.spellOutUnit(unit), expect[i]);
+      });
+      done();
+    });
+  });
 });
