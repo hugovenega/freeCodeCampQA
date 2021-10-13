@@ -119,4 +119,60 @@ mocha.suite('Unit Tests', () => {
       done();
     });
   });
+
+  mocha.suite('Function convertHandler.convert(num, unit)', () => {
+    mocha.test('gal to L', (done) => {
+      const input = [4, 'gal'];
+      const expect = 15.14164;
+      assert.approximately(
+        convertHandler.convert(input[0], input[1]), expect, 0.1,
+      );
+      done();
+    });
+
+    mocha.test('L to gal', (done) => {
+      const input = [4, 'l'];
+      const expect = 1.056688;
+      assert.approximately(
+        convertHandler.convert(input[0], input[1]), expect, 0.1,
+      );
+      done();
+    });
+
+    mocha.test('mi to km', (done) => {
+      const input = [4, 'mi'];
+      const expect = 6.437376;
+      assert.approximately(
+        convertHandler.convert(input[0], input[1]), expect, 0.1,
+      );
+      done();
+    });
+
+    mocha.test('km to mi', (done) => {
+      const input = [4, 'km'];
+      const expect = 2.485485;
+      assert.approximately(
+        convertHandler.convert(input[0], input[1]), expect, 0.1,
+      );
+      done();
+    });
+
+    mocha.test('lbs to kg', (done) => {
+      const input = [4, 'lbs'];
+      const expect = 1.814369;
+      assert.approximately(
+        convertHandler.convert(input[0], input[1]), expect, 0.1,
+      );
+      done();
+    });
+
+    mocha.test('kg to lbs', (done) => {
+      const input = [4, 'kg'];
+      const expect = 8.81849;
+      assert.approximately(
+        convertHandler.convert(input[0], input[1]), expect, 0.1,
+      );
+      done();
+    });
+  });
 });
