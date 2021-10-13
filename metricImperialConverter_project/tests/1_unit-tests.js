@@ -90,4 +90,15 @@ mocha.suite('Unit Tests', () => {
       done();
     });
   });
+
+  mocha.suite('Function convertHandler.getReturnUnit(initUnit)', () => {
+    mocha.test('For each valid inputs', (done) => {
+      const input = ['gal', 'l', 'mi', 'km', 'lbs', 'kg'];
+      const expect = ['L', 'gal', 'km', 'mi', 'kg', 'lbs'];
+      input.forEach((unit, i) => {
+        assert.equal(convertHandler.getReturnUnit(unit), expect[i]);
+      });
+      done();
+    });
+  });
 });
