@@ -5,7 +5,7 @@ module.exports = function (app) {
   const convertHandler = new ConvertHandler();
 
   app.route('/api/convert').get((req, res) => {
-    const { input } = req.query;
+    const input = req.query.input;
 
     const initNum = convertHandler.getNum(input);
     const initUnit = convertHandler.getUnit(input);
@@ -17,5 +17,22 @@ module.exports = function (app) {
       returnNum,
       returnUnit,
     );
+
+    if (initNum === undefined && initUnit === undefined) {
+      res.send('invalid number and unit');
+    } else if (initUnit === undefined) {
+      res.send('invalid unit');
+    } else if (initNum === undefined) {
+      res.send('invalid number');
+    }
+
+    const resObj = {};
+
+    resObj.initNum = initNum;
+    resObj.initUnit = initUnit;
+    resObj.returnNum = returnNum;
+    resObj.returnUnit = returnUnit;
+    resObj.string = toString;
+    res.json(resObj);
   });
 };
