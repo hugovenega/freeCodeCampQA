@@ -139,4 +139,10 @@ function ConvertHandler() {
     }
     return undefined;
   };
+
+  this.getString = function toString(initNum, initUnit, returnNum, returnUnit) {
+    return `${initNum} ${this.spellOutUnit(initUnit)} converts to ${returnNum} ${this.spellOutUnit(returnUnit)}`;
+  };
 }
+
+module.exports = ConvertHandler;
