@@ -1,34 +1,34 @@
 const mongoose = require('mongoose');
-const Issue = require('../models/issue');
-const Project = require('../models/project');
+const Issue = require('../models/issues');
+const Project = require('../models/projects');
 
 mongoose.model('Issue');
 
 module.exports = function (app) {
-  app.route('/api/issues/:project');
+  app.route('/api/issues/:project')
 
-  app.get((req, res) => {
-    const { project } = req.params;
+    .get((req, res) => {
+      const { project } = req.params;
 
-    const searchQuery = req.query;
+      const searchQuery = req.query;
 
-    if (searchQuery.open) {
-      searchQuery.open = String(searchQuery.open) === 'true';
-    }
-
-    Project.find({
-      name: project,
-    }).populate('issue').exec((err, populatedProject) => {
-      if (err) console.log(err);
-      let filteredIssue = populatedProject[0].issue;
-      if (searchQuery) {
-        for (const parameter in searchQuery) {
-          filteredIssue = filteredIssue.filter((issue) => issue[parameter] == searchQuery[parameter]);
-        }
+      if (searchQuery.open) {
+        searchQuery.open = String(searchQuery.open) === 'true';
       }
-      res.send(filteredIssue);
-    });
-  })
+
+      Project.find({
+        name: project,
+      }).populate('issue').exec((err, populatedProject) => {
+        if (err) console.log(err);
+        let filteredIssue = populatedProject[0].issue;
+        if (searchQuery) {
+          for (let parameter in searchQuery) {
+            filteredIssue = filteredIssue.filter((issue) => issue[parameter] == searchQuery[parameter]);
+          }
+        }
+        res.send(filteredIssue);
+      });
+    })
 
     .post((req, res) => {
       const { project } = req.params;
@@ -39,19 +39,19 @@ module.exports = function (app) {
           error: 'required field(s) missing',
         });
       } else {
-      // look if project already exist
+        // look if project already exist
         Project.findOne({
           name: project,
-        }, (foundProjectErr, foundProject) => {
-          if (foundProjectErr) {
-            console.log(foundProjectErr);
-          // if there is no project
+        }, (err, foundProject) => {
+          if (err) {
+            console.log(err);
+            // if there is no project
           } else if (foundProject === null) {
             Project.create({
               name: project,
-            }, (createProjectErr, newProject) => {
-              if (createProjectErr) {
-                console.log(createProjectErr);
+            }, (err, newProject) => {
+              if (err) {
+                console.log(err);
               } else {
                 Issue.create({
                   issue_title: body.issue_title,
@@ -59,21 +59,21 @@ module.exports = function (app) {
                   created_by: body.created_by,
                   assigned_to: body.assigned_to,
                   status_text: body.status_text,
-                }, (createIssueErr, newIssue) => {
-                  if (createIssueErr) {
-                    console.log(createIssueErr);
+                }, (err, newIssue) => {
+                  if (err) {
+                    console.log(err);
                   }
                   // made new project and new issue now push new issue to newly made project
                   newProject.issue.push(newIssue);
-                  newProject.save((saveProjectErr, savedProject) => {
-                    saveProjectErr ? console.log(saveProjectErr) : res.json(newIssue);
+                  newProject.save((err, savedProject) => {
+                    err ? console.log(err) : res.json(newIssue);
                   });
                 });
               }
             });
-          // if we get matched project
+            // if we get matched project
           } else if (foundProject) {
-          // create a new issue
+            // create a new issue
             Issue.create({
               issue_title: body.issue_title,
               issue_text: body.issue_text,
@@ -94,6 +94,9 @@ module.exports = function (app) {
       }
     })
 
+  // TODO: have to add check to close the issue
+
+    // put is use to overwrite
     .put((req, res) => {
       const { project } = req.params;
       const { body } = req;
@@ -103,7 +106,7 @@ module.exports = function (app) {
 
       const updates = req.body;
       // Delete all field which is empty.
-      for (const data in updates) {
+      for (let data in updates) {
         if (!updates[data]) delete updates[data];
       }
       // Extract boolean from string.
@@ -138,5 +141,24 @@ module.exports = function (app) {
 
     .delete((req, res) => {
       const { project } = req.params;
+
+      if (!req.body._id) {
+        return res.send({
+          error: 'missing _id',
+        });
+      }
+
+      Issue.findByIdAndDelete(req.body._id, (err, issue) => {
+        if (err || issue === null) {
+          return res.json({
+            error: 'could not delete',
+            _id: req.body._id,
+          });
+        }
+        res.json({
+          result: 'successfully deleted',
+          _id: req.body._id,
+        });
+      });
     });
 };
