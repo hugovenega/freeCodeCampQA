@@ -321,4 +321,69 @@ mocha.suite('Functional Tests', () => {
         });
     });
   });
+
+  mocha.suite('DELETE Tests', () => {
+    // Delete an issue: DELETE request to /api/issues/{project} .
+
+    mocha.test('Delete an Issue', (done) => {
+      const testData = {
+        issue_title: 'Delete Issue Test',
+        issue_text: 'Some Text',
+        created_by: 'Delete Issue Tester',
+      };
+      chai.request(server)
+        .post('/api/issues/test')
+        .send(testData)
+        .end((err, res) => {
+          chai.request(server)
+            .delete('/api/issues/test')
+            .send({
+              _id: res.body._id,
+            })
+            .end((err, response) => {
+              assert.equal(response.status, 200);
+              assert.deepEqual(response.body, {
+                result: 'successfully deleted',
+                _id: res.body._id,
+              });
+              done();
+            });
+        });
+    });
+
+    // Delete an issue with missing _id: DELETE request to /api/issues/{project}
+
+    mocha.test('Delete an Issue With Missing ID', (done) => {
+      chai.request(server)
+        .delete('/api/issues/test')
+        .send()
+        .end((err, response) => {
+          assert.equal(response.status, 200);
+          assert.deepEqual(response.body, {
+            error: 'missing _id',
+          });
+          done();
+        });
+    });
+
+    // Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
+
+    mocha.test('Delete Issue With an Invalid ID', (done) => {
+      const id = new ObjectID('123abc123abc');
+      chai.request(server)
+        .delete('/api/issues/test')
+        .send({
+          _id: id,
+          issue_text: 'Delete With Invalid Id',
+        })
+        .end((err, response) => {
+          assert.equal(response.status, 200);
+          assert.deepEqual(response.body, {
+            error: 'could not delete',
+            _id: ObjectID(id).toString(),
+          });
+          done();
+        });
+    });
+  });
 });
