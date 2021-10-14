@@ -96,6 +96,44 @@ module.exports = function (app) {
 
     .put((req, res) => {
       const { project } = req.params;
+      const { body } = req;
+      // Store `id` and delete it.
+      const id = body._id;
+      delete body._id;
+
+      const updates = req.body;
+      // Delete all field which is empty.
+      for (const data in updates) {
+        if (!updates[data]) delete updates[data];
+      }
+      // Extract boolean from string.
+      if (updates.open) updates.open = String(!updates.open) === 'true';
+      // if no id sent
+      if (!id) {
+        return res.json({
+          error: 'missing _id',
+        });
+      } if (Object.keys(updates).length === 0) {
+        return res.json({
+          error: 'no update field(s) sent',
+          _id: id,
+        });
+      }
+      updates.updated_on = new Date();
+      Issue.findByIdAndUpdate(id, updates, (err, updatedIssue) => {
+        // handle err and when there is not matched id
+        if (err || updatedIssue === null) {
+          console.log(err);
+          return res.json({
+            error: 'could not update',
+            _id: id,
+          });
+        }
+        return res.json({
+          result: 'successfully updated',
+          _id: id,
+        });
+      });
     })
 
     .delete((req, res) => {
