@@ -90,4 +90,21 @@ mocha.suite('Functional Tests', () => {
         done();
       });
   });
+
+  // Create an issue with missing required fields: POST request to /api/issues/{project}
+
+  mocha.test('Create an Issue With Missing Required Fields', (done) => {
+    const testData = {
+      issue_title: 'Test Title',
+      issue_text: 'Test Text',
+    };
+    chai.request(server)
+      .post('/api/issues/test')
+      .send(testData)
+      .end((err, res) => {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.error, 'required field(s) missing');
+        done();
+      });
+  });
 });
