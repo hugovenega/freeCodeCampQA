@@ -14,6 +14,33 @@ const runner = require('./test-runner');
 
 const app = express();
 
+app.use('/public', express.static(`${process.cwd()}/public`));
+
+app.use(cors({ origin: '*' })); // For FCC testing purposes only
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Connect with database
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+})
+  .then(() => console.log('Connected'))
+  .catch((err) => console.log('error to connect', err));
+
+// Sample front-end
+app.route('/:project/')
+  .get((req, res) => {
+    res.sendFile(`${process.cwd()}/views/issue.html`);
+  });
+
+// Index page (static HTML)
+app.route('/')
+  .get((req, res) => {
+    res.sendFile(`${process.cwd()}/views/index.html`);
+  });
 
 // For FCC testing purposes
 fccTestingRoutes(app);
