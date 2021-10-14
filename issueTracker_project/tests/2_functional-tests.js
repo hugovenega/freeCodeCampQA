@@ -106,4 +106,91 @@ mocha.suite('Functional Tests', () => {
         });
     });
   });
+
+  mocha.suite('GET Tests', () => {
+    // View issues on a project: GET request to /api/issues/{project}
+    mocha.test('Get All Issue in an Array', (done) => {
+      const testData = {
+        issue_title: 'Get Issue Test Without Filter',
+        issue_text: 'Some Text',
+        created_by: 'Get Issue Tester',
+      };
+      const url = `/api/issues/test${Date.now().toString().substring(7)}`;
+      chai.request(server)
+        .post(url)
+        .send(testData)
+        .end((err, res) => {
+          chai.request(server)
+            .get(url)
+            .end((err, res) => {
+              assert.isArray(res.body);
+              assert.lengthOf(res.body, 1);
+              (res.body).forEach((element) => {
+                assert.property(element, 'issue_title');
+                assert.property(element, 'issue_text');
+                assert.property(element, 'created_by');
+              });
+              done();
+            });
+        });
+    });
+
+    // View issues on a project with one filter: GET request to /api/issues/{project}
+
+    mocha.test('Get Issue With One Filter', (done) => {
+      const testData = {
+        issue_title: 'Get Issue Test Without Filter',
+        issue_text: 'Some Text',
+        created_by: 'Get Issue Tester',
+      };
+      const postUrl = `/api/issues/test${Date.now().toString().substring(7)}`;
+      const getUrl = `/api/issues/test${Date.now().toString().substring(7)}?open=true`;
+      chai.request(server)
+        .post(postUrl)
+        .send(testData)
+        .end((err, res) => {
+          chai.request(server)
+            .get(getUrl)
+            .end((err, response) => {
+              assert.isArray(response.body);
+              assert.lengthOf(response.body, 1);
+              (response.body).forEach((element) => {
+                assert.property(element, 'issue_title');
+                assert.property(element, 'issue_text');
+                assert.property(element, 'created_by');
+              });
+              done();
+            });
+        });
+    });
+
+    // View issues on a project with multiple filters: GET request to /api/issues/{project}
+
+    mocha.test('Get Issue With Multiple Filters', (done) => {
+      const testData = {
+        issue_title: 'Get Issue Test Multiple Filter',
+        issue_text: 'Some Text',
+        created_by: 'Get Issue Testers',
+      };
+      const postUrl = `/api/issues/test${Date.now().toString().substring(7)}`;
+      const getUrl = `/api/issues/test${Date.now().toString().substring(7)}?open=true&created_by=Get%20Issue%20Testers`;
+      chai.request(server)
+        .post(postUrl)
+        .send(testData)
+        .end((err, res) => {
+          chai.request(server)
+            .get(getUrl)
+            .end((err, response) => {
+              assert.isArray(response.body);
+              assert.lengthOf(response.body, 1);
+              (response.body).forEach((element) => {
+                assert.property(element, 'issue_title');
+                assert.property(element, 'issue_text');
+                assert.property(element, 'created_by');
+              });
+              done();
+            });
+        });
+    });
+  });
 });
