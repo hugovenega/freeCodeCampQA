@@ -193,4 +193,132 @@ mocha.suite('Functional Tests', () => {
         });
     });
   });
+
+  mocha.suite('PUT Tests', () => {
+    // Update one field on an issue: PUT request to /api/issues/{project}
+
+    mocha.test('Update Issue With One Field to Update', (done) => {
+      const testData = {
+        issue_title: 'Put Issue Test With One Field To Update',
+        issue_text: 'Some Text',
+        created_by: 'Put Issue Tester',
+      };
+      chai.request(server)
+        .post('/api/issues/test')
+        .send(testData)
+        .end((err, res) => {
+          chai.request(server)
+            .put('/api/issues/test')
+            .send({
+              _id: res.body._id,
+              issue_text: 'Update With One Feild',
+            })
+            .end((err, response) => {
+              assert.equal(response.status, 200);
+              assert.deepEqual(response.body, {
+                result: 'successfully updated',
+                _id: res.body._id,
+              });
+              done();
+            });
+        });
+    });
+
+    // Update multiple fields on an issue: PUT request to /api/issues/{project}
+
+    mocha.test('Update Issue With Multiple Field to Update', (done) => {
+      const testData = {
+        issue_title: 'Get Issue Test Without Filter',
+        issue_text: 'Some Text',
+        created_by: 'Put Issue Tester',
+      };
+      chai.request(server)
+        .post('/api/issues/test')
+        .send(testData)
+        .end((err, res) => {
+          chai.request(server)
+            .put('/api/issues/test')
+            .send({
+              _id: res.body._id,
+              issue_text: 'Multiple Update Test 1',
+              issue_title: 'Multiple Update Test 2',
+            })
+            .end((err, response) => {
+              assert.equal(response.status, 200);
+              assert.deepEqual(response.body, {
+                result: 'successfully updated',
+                _id: res.body._id,
+              });
+              done();
+            });
+        });
+    });
+
+    // Update an issue with missing _id: PUT request to /api/issues/{project}
+
+    mocha.test('Update Issue With Missing _id', (done) => {
+      chai.request(server)
+        .put('/api/issues/test')
+        .send({
+          _id: '',
+          issue_text: 'Missing ID Test 1',
+          issue_title: 'Missing ID Test 2',
+        })
+        .end((err, response) => {
+          assert.equal(response.status, 200);
+          assert.deepEqual(response.body, {
+            error: 'missing _id',
+          });
+          done();
+        });
+    });
+
+    // Update an issue with no fields to update: PUT request to /api/issues/{project}
+
+    mocha.test('Update Issue Without Any Field', (done) => {
+      const testData = {
+        issue_title: 'Get Issue Test Without Field To Update',
+        issue_text: 'Some Text',
+        created_by: 'Put Issue Tester',
+      };
+      chai.request(server)
+        .post('/api/issues/test')
+        .send(testData)
+        .end((err, res) => {
+          chai.request(server)
+            .put('/api/issues/test')
+            .send({
+              _id: res.body._id,
+            })
+            .end((err, response) => {
+              assert.equal(response.status, 200);
+              assert.deepEqual(response.body, {
+                error: 'no update field(s) sent',
+                _id: res.body._id,
+              });
+              done();
+            });
+        });
+    });
+
+    // Update an issue with an invalid _id: PUT request to /api/issues/{project}
+
+    test('Update Issue With an Invalid Id', (done) => {
+      const id = new ObjectID('123abc123abc');
+      chai.request(server)
+        .put('/api/issues/test')
+        .send({
+          _id: id,
+          issue_text: 'Update With Invalid Id',
+        })
+        .end((err, response) => {
+          assert.equal(response.status, 200);
+          assert.deepEqual(response.body, {
+            error: 'could not update',
+            _id: ObjectID(id).toString(),
+          });
+          done();
+        });
+    });
+  });
 });
